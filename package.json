@@ -1,0 +1,24 @@
+{
+  "name": "@pwalton/wp-theme-cli",
+  "version": "0.0.0",
+  "description": "CLI for starting a new WordPress theme from the Denman Digital template.",
+  "bin": "./bin/cli.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/paulthewalton/wp-theme-cli.git"
+  },
+  "author": "Denman Digital",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/paulthewalton/wp-theme-cli/issues"
+  },
+  "homepage": "https://github.com/paulthewalton/wp-theme-cli#readme",
+  "dependencies": {
+    "npe": "^1.2.0",
+    "prompts": "^2.4.2",
+    "replace-in-file": "^6.3.2"
+  }
+}
