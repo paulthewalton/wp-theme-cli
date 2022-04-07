@@ -3,6 +3,13 @@
   "version": "0.1.0",
   "description": "CLI for starting a new WordPress theme from the Denman Digital template.",
   "bin": "./bin/cli.js",
+  "keywords": [
+    "WordPress",
+    "theme",
+    "boilerplate",
+    "generator",
+    "cli"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

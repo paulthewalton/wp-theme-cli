@@ -4,6 +4,9 @@ const { execSync } = require("child_process");
 
 const prompts = require("prompts");
 const replaceInFiles = require("replace-in-file");
+const fs = require("fs/promises");
+const path = require("path");
+
 /**
  * Strip the case of a string: no capitals, words separated by a single space.
  * @summary Strip the case of a string.
@@ -165,6 +168,8 @@ const repoName = process.argv[2];
 
 	const commands = {
 		gitCheckout: `git clone --depth 1 https://github.com/Denman-Digital/wp-theme-starter.git  ${repoName}`,
+		cdIn: `cd ${repoName}`,
+		cdOut: `cd ..`,
 		installDeps: `echo "cd ${repoName} && npm install"`,
 	};
 
@@ -172,10 +177,25 @@ const repoName = process.argv[2];
 	const didCheckOut = runCommand(commands.gitCheckout);
 	if (!didCheckOut) process.exit(-1);
 
+	const paths = {
+		package: path.join(repoName, "package.json"),
+		packageSample: path.join(repoName, "package-sample.json"),
+		styleCSS: path.join(repoName, "style.css"),
+	};
+
+	try {
+		await fs.access(paths.packageSample);
+		console.log("Generating new package.json from package-sample.json");
+		await fs.rm(paths.package);
+		await fs.rename(paths.packageSample, paths.package);
+	} catch (error) {
+		console.error("Unable to generate new package.json from package-sample.json");
+	}
+
 	try {
 		console.log("Customizing theme metadata.");
 		await replaceInFiles({
-			files: ["style.css", "package.json"],
+			files: [paths.styleCSS, paths.package],
 			from: [
 				/<theme_slug>/g,
 				/<theme_display_name>/g,
@@ -184,30 +204,42 @@ const repoName = process.argv[2];
 				/<theme_author_uri>/g,
 				/<theme_github_uri>/g,
 				/<theme_uri>/g,
-				"wp-theme-starter-text-domain",
+				/wp-theme-starter-text-domain/g,
 			],
 			to: [slug, displayName, description, authorName, authorUri, githubUri, uri, textDomain],
+			dry: true,
 		});
 
 		await replaceInFiles({
-			files: ["style.css"],
+			files: paths.styleCSS,
 			from: "<theme_keywords>",
 			to: keywords,
+			dry: true,
 		});
 
 		await replaceInFiles({
-			files: ["package.json"],
+			files: paths.package,
+			dry: true,
 			from: '"<theme_keywords>"',
 			to: keywords
-				.split(",")
-				.map((str) => `"${str.trim()}"`)
-				.join(", "),
+			.split(",")
+			.map((str) => `"${str.trim()}"`)
+			.join(", "),
 		});
 
 		await replaceInFiles({
-			files: "**/*.php",
-			from: ["<theme_slug>", "wp-theme-starter-text-domain", "wp_theme_starter_", "WP_Theme_Starter_"],
+			dry: true,
+			files: path.join(repoName, "**/*.php"),
+			ignore: "**/vendor/**/*.php",
+			from: [/<theme_slug>/g, /wp-theme-starter-text-domain/g, /wp_theme_starter_/g, /WP_Theme_Starter_/g],
 			to: [slug, textDomain, funcPrefix, classPrefix],
+		});
+
+		await replaceInFiles({
+			files: path.join(repoName, "readme.md"),
+			dry: true,
+			from: /<!-- start_banner .* end_banner -->/gmi,
+			to: `# ${displayName}\n\n${description}\n\nBased on [Denman WP Theme Starter](https://github.com/Denman-Digital/wp-theme-starter/)}\n\n`,
 		});
 	} catch (error) {
 		console.error(error);
