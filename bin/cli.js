@@ -84,6 +84,13 @@ const commands = {
 	installDeps: `cd ${repoName} && npm install`,
 };
 
+const paths = {
+	package: path.join(repoName, "package.json"),
+	packageSample: path.join(repoName, "package-sample.json"),
+	styleCSS: path.join(repoName, "style.css"),
+	repoHistory: path.join(repoName, ".git"),
+};
+
 (async () => {
 	/** @type {Object.<string, string>} */
 	const {
@@ -171,16 +178,9 @@ const commands = {
 		},
 	]);
 
-
 	console.log(`Cloning the template repository to "${repoName}"`);
 	const didCheckOut = runCommand(commands.gitCheckout);
 	if (!didCheckOut) process.exit(-1);
-
-	const paths = {
-		package: path.join(repoName, "package.json"),
-		packageSample: path.join(repoName, "package-sample.json"),
-		styleCSS: path.join(repoName, "style.css"),
-	};
 
 	try {
 		await fs.access(paths.packageSample);
@@ -206,19 +206,16 @@ const commands = {
 				/wp-theme-starter-text-domain/g,
 			],
 			to: [slug, displayName, description, authorName, authorUri, githubUri, uri, textDomain],
-			dry: true,
 		});
 
 		await replaceInFiles({
 			files: paths.styleCSS,
 			from: "<theme_keywords>",
 			to: keywords,
-			dry: true,
 		});
 
 		await replaceInFiles({
 			files: paths.package,
-			dry: true,
 			from: '"<theme_keywords>"',
 			to: keywords
 				.split(",")
@@ -227,7 +224,6 @@ const commands = {
 		});
 
 		await replaceInFiles({
-			dry: true,
 			files: path.join(repoName, "**/*.php"),
 			ignore: "**/vendor/**/*.php",
 			from: [/<theme_slug>/g, /wp-theme-starter-text-domain/g, /wp_theme_starter_/g, /WP_Theme_Starter_/g],
@@ -236,7 +232,6 @@ const commands = {
 
 		await replaceInFiles({
 			files: path.join(repoName, "readme.md"),
-			dry: true,
 			from: /<!-- start_banner .* end_banner -->/gim,
 			to: `# ${displayName}\n\n${description}\n\nBased on [Denman WP Theme Starter](https://github.com/Denman-Digital/wp-theme-starter/)}\n\n`,
 		});
