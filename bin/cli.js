@@ -79,7 +79,10 @@ const runCommand = (command) => {
 
 const repoName = process.argv[2];
 
-console.log("about to start async");
+const commands = {
+	gitCheckout: `git clone -b npx --depth 1 https://github.com/Denman-Digital/wp-theme-starter.git  ${repoName}`,
+	installDeps: `cd ${repoName} && npm install`,
+};
 
 (async () => {
 	/** @type {Object.<string, string>} */
@@ -168,12 +171,6 @@ console.log("about to start async");
 		},
 	]);
 
-	const commands = {
-		gitCheckout: `git clone --depth 1 https://github.com/Denman-Digital/wp-theme-starter.git  ${repoName}`,
-		cdIn: `cd ${repoName}`,
-		cdOut: `cd ..`,
-		installDeps: `echo "cd ${repoName} && npm install"`,
-	};
 
 	console.log(`Cloning the template repository to "${repoName}"`);
 	const didCheckOut = runCommand(commands.gitCheckout);
