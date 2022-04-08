@@ -58,7 +58,7 @@ function snakeCase(str) {
  * @returns {string}
  * @example upperSnakeCase("This is my sample"); // => "THIS_IS_MY_SAMPLE"
  */
-export function titleSnakeCase(str) {
+function titleSnakeCase(str) {
 	return titleCase(str).replace(/\s+/g, "_");
 }
 
@@ -79,7 +79,7 @@ const runCommand = (command) => {
 
 const repoName = process.argv[2];
 
-(async () => {
+console.log()(async () => {
 	/** @type {Object.<string, string>} */
 	const {
 		slug,
@@ -222,9 +222,9 @@ const repoName = process.argv[2];
 			dry: true,
 			from: '"<theme_keywords>"',
 			to: keywords
-			.split(",")
-			.map((str) => `"${str.trim()}"`)
-			.join(", "),
+				.split(",")
+				.map((str) => `"${str.trim()}"`)
+				.join(", "),
 		});
 
 		await replaceInFiles({
@@ -238,7 +238,7 @@ const repoName = process.argv[2];
 		await replaceInFiles({
 			files: path.join(repoName, "readme.md"),
 			dry: true,
-			from: /<!-- start_banner .* end_banner -->/gmi,
+			from: /<!-- start_banner .* end_banner -->/gim,
 			to: `# ${displayName}\n\n${description}\n\nBased on [Denman WP Theme Starter](https://github.com/Denman-Digital/wp-theme-starter/)}\n\n`,
 		});
 	} catch (error) {
