@@ -79,7 +79,9 @@ const runCommand = (command) => {
 
 const repoName = process.argv[2];
 
-console.log()(async () => {
+console.log("about to start async");
+
+(async () => {
 	/** @type {Object.<string, string>} */
 	const {
 		slug,
