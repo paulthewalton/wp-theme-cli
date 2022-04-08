@@ -63,6 +63,19 @@ function titleSnakeCase(str) {
 }
 
 /**
+ * An await-able timeout
+ *
+ * @param {number} duration
+ * @returns {Promise}
+ */
+function setTimer(duration) {
+	const promise = new Promise((resolve) => {
+		setTimeout(resolve, toNumber(duration));
+	});
+	return promise;
+}
+
+/**
  *
  * @param {string} command
  * @returns {boolean}
@@ -170,14 +183,14 @@ const paths = {
 			name: "funcPrefix",
 			message: "Theme function prefix",
 			initial: (_, { slug }) => snakeCase(slug) + "_",
-			validate: (value) => /\s/.test(value) ? "Function prefix must not contain any spaces." : true,
+			validate: (value) => (/\s/.test(value) ? "Function prefix must not contain any spaces." : true),
 		},
 		{
 			type: "text",
 			name: "classPrefix",
 			message: "Theme class prefix",
 			initial: (_, { slug }) => titleSnakeCase(slug) + "_",
-			validate: (value) => /\s/.test(value) ? "Class prefix must not contain any spaces." : true,
+			validate: (value) => (/\s/.test(value) ? "Class prefix must not contain any spaces." : true),
 		},
 	]);
 
@@ -187,7 +200,7 @@ const paths = {
 
 	try {
 		await fs.access(paths.packageSample);
-		console.log("Generating new package.json from package-sample.json");
+		console.log("\nGenerating new package.json from package-sample.json");
 		await fs.rm(paths.package);
 		await fs.rename(paths.packageSample, paths.package);
 	} catch (error) {
@@ -236,21 +249,27 @@ const paths = {
 		await replaceInFiles({
 			files: path.join(repoName, "readme.md"),
 			from: /<!-- start_banner.*end_banner -->/gims,
-			to: `# ${displayName}\n\n${description}\n\nBased on [Denman WP Theme Starter](https://github.com/Denman-Digital/wp-theme-starter/)}\n\n`,
+			to: `# ${displayName}\n\n${description}\n\nBased on [Denman WP Theme Starter](https://github.com/Denman-Digital/wp-theme-starter/)\n\n`,
 		});
 	} catch (error) {
 		console.error(error);
 	}
 
 	console.log("Creating a blank Git repo.");
+
+	await setTimer(2000);
+
 	const didClearRepo = runCommand(commands.newRepo);
 	if (!didClearRepo)
 		console.warn("Was unable to finish removing boilerplate's development Git history and initialize new blank repo.");
 
-	console.log(`Installing dependencies for ${repoName}`);
+	console.log(`\nInstalling dependencies for ${repoName}`);
+
+	await setTimer(2000);
+
 	const didInstallDeps = runCommand(commands.installDeps);
 	if (!didInstallDeps) process.exit(-1);
 
-	console.log("Congratulations! Use the following commands to get started:");
+	console.log("\nCongratulations! Use the following commands to get started:");
 	console.log(`\n\tcd ${repoName} && npm start`);
 })();
