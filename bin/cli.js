@@ -170,12 +170,14 @@ const paths = {
 			name: "funcPrefix",
 			message: "Theme function prefix",
 			initial: (_, { slug }) => snakeCase(slug) + "_",
+			validate: (value) => /\s/.test(value) ? "Function prefix must not contain any spaces." : true,
 		},
 		{
 			type: "text",
 			name: "classPrefix",
 			message: "Theme class prefix",
 			initial: (_, { slug }) => titleSnakeCase(slug) + "_",
+			validate: (value) => /\s/.test(value) ? "Class prefix must not contain any spaces." : true,
 		},
 	]);
 
@@ -233,7 +235,7 @@ const paths = {
 
 		await replaceInFiles({
 			files: path.join(repoName, "readme.md"),
-			from: /<!-- start_banner .* end_banner -->/gim,
+			from: /<!-- start_banner.*end_banner -->/gims,
 			to: `# ${displayName}\n\n${description}\n\nBased on [Denman WP Theme Starter](https://github.com/Denman-Digital/wp-theme-starter/)}\n\n`,
 		});
 	} catch (error) {
@@ -247,7 +249,6 @@ const paths = {
 
 	console.log(`Installing dependencies for ${repoName}`);
 	const didInstallDeps = runCommand(commands.installDeps);
-
 	if (!didInstallDeps) process.exit(-1);
 
 	console.log("Congratulations! Use the following commands to get started:");
