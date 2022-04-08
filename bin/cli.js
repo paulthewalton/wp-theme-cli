@@ -53,13 +53,22 @@ function snakeCase(str) {
 
 /**
  * Title snake case a string (aka PHP class case).
- * @category String
  * @arg {string} str
  * @returns {string}
  * @example upperSnakeCase("This is my sample"); // => "THIS_IS_MY_SAMPLE"
  */
 function titleSnakeCase(str) {
 	return titleCase(str).replace(/\s+/g, "_");
+}
+
+/**
+ * Kebab case a string.
+ * @arg {string} str
+ * @returns {string}
+ * @example kebabCase("This is my sample"); // => "this-is-my-sample"
+ */
+function kebabCase(str) {
+	return stripCase(str).replace(/\s+/g, "-");
 }
 
 /**
@@ -101,6 +110,10 @@ const commands = {
 const paths = {
 	package: path.join(repoName, "package.json"),
 	packageSample: path.join(repoName, "package-sample.json"),
+	composer: path.join(repoName, "composer.json"),
+	composerSample: path.join(repoName, "composer-sample.json"),
+	composerIncludes: path.join(repoName, "includes", "composer.json"),
+	composerIncludesSample: path.join(repoName, "includes", "composer-sample.json"),
 	styleCSS: path.join(repoName, "style.css"),
 	repoHistory: path.join(repoName, ".git"),
 };
@@ -112,6 +125,7 @@ const paths = {
 		displayName,
 		description,
 		authorName,
+		authorSlug,
 		authorUri,
 		githubUri,
 		uri,
@@ -143,6 +157,12 @@ const paths = {
 			name: "authorName",
 			message: "Author name",
 			initial: "Denman Digital",
+		},
+		{
+			type: "text",
+			name: "authorSlug",
+			message: "Author slug/GitHub username",
+			initial: (prev) => kebabCase(prev),
 		},
 		{
 			type: "text",
@@ -208,20 +228,32 @@ const paths = {
 	}
 
 	try {
-		console.log("Customizing theme metadata.");
+		await fs.access(paths.packageSample);
+		console.log("\nGenerating new composer.json's from composer-sample.json's");
+		await fs.rm(paths.composer);
+		await fs.rename(paths.composerSample, paths.composer);
+		await fs.rm(paths.composerIncludes);
+		await fs.rename(paths.composerIncludesSample, paths.composerIncludes);
+	} catch (error) {
+		console.error("Unable to generate new composer.json's");
+	}
+
+	try {
+		console.log("Customizing theme metadata");
 		await replaceInFiles({
-			files: [paths.styleCSS, paths.package],
+			files: [paths.styleCSS, paths.package, paths.composer, paths.composerIncludes],
 			from: [
 				/<theme_slug>/g,
 				/<theme_display_name>/g,
 				/<theme_description>/g,
 				/<theme_author_name>/g,
 				/<theme_author_uri>/g,
+				/<theme_author_slug>/g,
 				/<theme_github_uri>/g,
 				/<theme_uri>/g,
 				/wp-theme-starter-text-domain/g,
 			],
-			to: [slug, displayName, description, authorName, authorUri, githubUri, uri, textDomain],
+			to: [slug, displayName, description, authorName, authorUri, authorSlug, githubUri, uri, textDomain],
 		});
 
 		await replaceInFiles({
@@ -231,7 +263,7 @@ const paths = {
 		});
 
 		await replaceInFiles({
-			files: paths.package,
+			files: [paths.package, paths.composer, paths.composerIncludes],
 			from: '"<theme_keywords>"',
 			to: keywords
 				.split(",")
@@ -255,13 +287,13 @@ const paths = {
 		console.error(error);
 	}
 
-	console.log("Creating a blank Git repo.");
+	console.log("Creating a blank-slate Git repo");
 
 	await setTimer(2000);
 
 	const didClearRepo = runCommand(commands.newRepo);
 	if (!didClearRepo)
-		console.warn("Was unable to finish removing boilerplate's development Git history and initialize new blank repo.");
+		console.warn("Was unable to finish removing boilerplate's development Git history and initialize new blank repo");
 
 	console.log(`\nInstalling dependencies for ${repoName}`);
 
