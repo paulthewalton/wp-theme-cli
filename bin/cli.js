@@ -81,6 +81,7 @@ const repoName = process.argv[2];
 
 const commands = {
 	gitCheckout: `git clone -b npx --depth 1 https://github.com/Denman-Digital/wp-theme-starter.git  ${repoName}`,
+	newRepo: `cd ${repoName} && rm -rf .git && git init && git add --all && git commit -m "Created new theme from wp-theme-starter"`,
 	installDeps: `cd ${repoName} && npm install`,
 };
 
@@ -238,6 +239,11 @@ const paths = {
 	} catch (error) {
 		console.error(error);
 	}
+
+	console.log("Creating a blank Git repo.");
+	const didClearRepo = runCommand(commands.newRepo);
+	if (!didClearRepo)
+		console.warn("Was unable to finish removing boilerplate's development Git history and initialize new blank repo.");
 
 	console.log(`Installing dependencies for ${repoName}`);
 	const didInstallDeps = runCommand(commands.installDeps);
