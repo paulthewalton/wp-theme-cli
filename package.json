@@ -1,6 +1,6 @@
 {
   "name": "@denmandigital/wp-theme-cli",
-  "version": "0.1.10",
+  "version": "1.0.0",
   "description": "CLI for starting a new WordPress theme from the Denman Digital template.",
   "bin": "./bin/cli.js",
   "keywords": [
