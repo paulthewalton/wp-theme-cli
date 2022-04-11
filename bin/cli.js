@@ -79,7 +79,7 @@ function kebabCase(str) {
  */
 function setTimer(duration) {
 	const promise = new Promise((resolve) => {
-		setTimeout(resolve, toNumber(duration));
+		setTimeout(resolve, duration);
 	});
 	return promise;
 }
