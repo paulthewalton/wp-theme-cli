@@ -228,7 +228,7 @@ const paths = {
 	}
 
 	try {
-		await fs.access(paths.packageSample);
+		await fs.access(paths.composerSample);
 		console.log("\nGenerating new composer.json's from composer-sample.json's");
 		await fs.rm(paths.composer);
 		await fs.rename(paths.composerSample, paths.composer);
