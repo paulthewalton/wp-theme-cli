@@ -289,7 +289,7 @@ const paths = {
 
 	console.log("Creating a blank-slate Git repo");
 
-	await setTimer(2000);
+	await setTimer(1000);
 
 	const didClearRepo = runCommand(commands.newRepo);
 	if (!didClearRepo)
@@ -297,7 +297,7 @@ const paths = {
 
 	console.log(`\nInstalling dependencies for ${repoName}`);
 
-	await setTimer(2000);
+	await setTimer(1000);
 
 	const didInstallDeps = runCommand(commands.installDeps);
 	if (!didInstallDeps) process.exit(-1);
